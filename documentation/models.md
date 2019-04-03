@@ -13,8 +13,8 @@ UserMembership - references type of memebership created initally
     - membership type (foreign key to membership)
 
 Subscription - only created when a member creates a a paid membership
-    - user membership 
-    - stripe subscription id  (created when a user pays)(foreign key to UserMembership)
+    - user membership (foreign key to UserMembership)
+    - stripe subscription id  (created when a user pays)
     - active 
 
 Course
