@@ -21,7 +21,8 @@ Course
     - slug
     - title
     - description
-    - allowed memberships (foreign key to Membership) - describes which membership can view
+    - allowed memberships (ManytoManyField to Membership) allow more than one membership - describes which membership can view
+
 
 Lesson
     - slug
