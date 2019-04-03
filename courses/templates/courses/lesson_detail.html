@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Course List</title>
+    <title>Lesson Detail</title>
 </head>
 <body>
-    <h1>Course Detail View Page</h1>
-    {{ object.title }}
-    {% for lesson in object.lessons %}
-    <a href="{{ lesson.get_absolute_url }}">{{lesson.title}}</a>
-    {% endfor %}
+    <h1>Lesson Detail Page</h1>
+    {{object}}
+
 </body>
 </html>
