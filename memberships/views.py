@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.views.generic import ListView
@@ -42,15 +42,14 @@ class MembershipSelectView(ListView):
         return context
 
     def post(self, request, **kwargs):
-        selected_membership = request.POST.get('membership_type') #get the value of the input 
         user_membership = get_user_membership(request)
         user_subscription = get_user_subscription(request)
+        selected_membership_type = request.POST.get('membership_type') #get the value of the input 
 
-        selected_membership_qs = Membership.objects.filter(
-            membership_type=selected_membership)
+        selected_membership = Membership.objects.filter(
+            membership_type=selected_membership_type)
 
-        if selected_membership_qs.exists():
-            selected_membership = selected_membership_qs.first()
+
         """
         Validation
         """
@@ -62,6 +61,7 @@ class MembershipSelectView(ListView):
 
         # assign to the session
         request.session['selected_membership_type'] = selected_membership.membership_type
+        
 
         return HttpResponseRedirect(reverse('memberships:payment'))
 
@@ -73,9 +73,50 @@ def PaymentView(request):
     
     publishKey = settings.STRIPE_PUBLISHABLE_KEY
 
+    if request.method == 'POST':
+        try:
+            token = request.POST['stripeToken']
+            subscription = stripe.Subscription.create(
+            customer=user_membership.stripe_customer_id,
+            items=[
+                    {
+                    "plan": selected_membership.stripe_plan_id,
+                    },
+                ],
+                source=token
+            )
+
+            return redirect(reverse('memberships:update-transactions',
+            kwargs={
+                'subscription_id': subscription.id
+            }))
+
+        except:
+            messages.info(request, "Your card has been declined.")
+            
     context = {
         'publishKey': publishKey,
         'selected_membership': selected_membership
     }
 
     return render(request, 'memberships/membership_payment.html', context)
+
+def updateTransactions(request, subscription_id):
+    user_membership = get_user_membership(request)
+    selected_membership = get_selected_membership(request)
+    user_membership.membership = selected_membership
+    # change user membership to the one they just paid for
+    user_membership.save()
+
+    sub, created = Subscription.objects.get_or_create(user_membership=user_membership)
+    sub.stripe_subscription_id = subscription_id
+    sub.active = True
+    sub.save()
+
+    try:
+        del request.session['selected_membership_type']
+    except:
+        pass
+    messages.info(request, "successfully created {} membership".format(selected_membership))
+
+    return redirect('/courses')
