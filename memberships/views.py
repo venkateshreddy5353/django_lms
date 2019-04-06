@@ -9,6 +9,16 @@ from .models import Membership, UserMembership, Subscription
 
 import stripe
 
+def profile_view(request):
+    user_membership = get_user_membership(request)
+    user_subscription = get_user_subscription(request)
+    context = {
+        'user_membership': user_membership,
+        'user_subscription': user_subscription
+    }
+
+    return render(request, "memberships/profile.html", context)
+
 def get_user_membership(request):
     user_membership_qs = UserMembership.objects.filter(user=request.user)
     if user_membership_qs.exists():
@@ -22,6 +32,7 @@ def get_user_subscription(request):
         user_subscription = user_subscription_qs.first()
         return user_subscription
     return None
+    
 
 #works if selected membership is in the session
 def get_selected_membership(request):
@@ -54,7 +65,7 @@ class MembershipSelectView(ListView):
         Validation
         """
         if user_membership.membership == selected_membership:
-            if user_subscription != None:
+            if user_subscription is not None:
                 messages.info(request, "you already have this membership. Your \
                     next payment is due {}".format('get this value from stripe'))
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
@@ -65,7 +76,7 @@ class MembershipSelectView(ListView):
 
         return HttpResponseRedirect(reverse('memberships:payment'))
 
-#provide usser with the stripe payent form and handle the payment
+#provide user with the stripe payent form and handle the payment
 def PaymentView(request):
     user_membership = get_user_membership(request)
 

@@ -15,7 +15,7 @@
                 {% endfor %}
             </ul>
             {% if object.membership_type != 'Free' %}
-            <form action="{% url 'memberships:select' %}" method="post">
+            <form action="{% url 'memberships:select' %}" method="POST">
                 {% csrf_token %}
                     {% if object.membership_type != current_membership %}
                     <button class="btn btn-warning">Select</button>

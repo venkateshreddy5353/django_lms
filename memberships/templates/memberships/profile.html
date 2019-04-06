@@ -1,0 +1,22 @@
+{% extends 'courses/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1>My Profile</h1>
+        <div class="col-sm-4 col-md-4">
+            {% if user_subscription != None %}
+                <h4>Current Membership: {{user_membership.membership.membership_type }}</h4>
+                <p>since: {{ user_subscription.get_created_date }}</p>
+                {% if user_subscription.active != False %}
+                    <p>Next Payment Due: {{user_subscription.get_next_billing_date }}</p>
+                    <a href="#">Cancel Subscription</a>
+                    {% else %}
+                    <p>You dont have an active mebership plan.</p>
+                    <a href="{% url 'memberships:select' %}">Check out memberships</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
