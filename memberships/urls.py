@@ -6,6 +6,6 @@ app_name = 'memberships'
 urlpatterns = [
     path('', MembershipSelectView.as_view(), name='select'),
     path('payment/', PaymentView, name='payment'),
-    path('update-transactions/<subsciption_id>/', updateTransactions, name='update-transactions'),
+    path('update-transactions/<subscription_id>/', updateTransactions, name='update-transactions'),
     path('profile/', profile_view, name='profile')
 ]

@@ -60,6 +60,8 @@ class MembershipSelectView(ListView):
         selected_membership = Membership.objects.filter(
             membership_type=selected_membership_type)
 
+        if selected_membership.exists():
+            selected_membership = selected_membership.first()
 
         """
         Validation
@@ -94,7 +96,7 @@ def PaymentView(request):
                     "plan": selected_membership.stripe_plan_id,
                     },
                 ],
-                source=token
+                source=token ##################### This is the problem payment wont go thru cuz api changed doesnt recognize source
             )
 
             return redirect(reverse('memberships:update-transactions',
