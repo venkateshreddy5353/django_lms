@@ -23,7 +23,6 @@ var stripe = Stripe('pk_test_TPlRZjj8NTCiYa0GmjJS6iOp');
       iconColor: '#fa755a'
     }
   };
-
   // Create an instance of the card Element.
   var card = elements.create('card', {style: style});
 
