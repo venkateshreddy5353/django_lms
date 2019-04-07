@@ -81,8 +81,10 @@ class MembershipSelectView(ListView):
 #provide user with the stripe payent form and handle the payment
 def PaymentView(request):
     user_membership = get_user_membership(request)
-
-    selected_membership = get_selected_membership(request)
+    try:
+        selected_membership = get_selected_membership(request)
+    except:
+        return redirect(reverse("memberships:select"))
     
     publishKey = settings.STRIPE_PUBLISHABLE_KEY
 
@@ -92,11 +94,8 @@ def PaymentView(request):
             subscription = stripe.Subscription.create(
             customer=user_membership.stripe_customer_id,
             items=[
-                    {
-                    "plan": selected_membership.stripe_plan_id,
-                    },
-                ],
-                source=token ##################### This is the problem payment wont go thru cuz api changed doesnt recognize source
+                    {"plan": selected_membership.stripe_plan_id},
+                ] ##################### This is the problem payment wont go thru cuz api changed doesnt recognize source
             )
 
             return redirect(reverse('memberships:update-transactions',
